@@ -3,6 +3,8 @@ import day01
 import day02
 import day03
 import gleam/io
+import gleam/regexp
+import gleam/string
 import gleeunit
 import gleeunit/should
 
@@ -41,6 +43,7 @@ pub fn day03_part1_test() {
 }
 
 pub fn day03_part2_test() {
-  day03.part2(aoc24.read("day03_ex.txt")) |> should.equal(48)
+  day03.part2(aoc24.read("day03_ex2.txt")) |> should.equal(48)
+
   day03.part2(aoc24.read("day03.txt")) |> print("03/2")
 }

@@ -1,8 +1,10 @@
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/option
 import gleam/regexp
 import gleam/result
+import gleam/string
 
 pub fn part1(input: String) -> Int {
   let assert Ok(re) = regexp.from_string("(mul\\((\\d+),(\\d+)\\))")
@@ -15,5 +17,9 @@ pub fn part1(input: String) -> Int {
 }
 
 pub fn part2(input: String) -> Int {
-  2
+  let assert Ok(re) = regexp.from_string("don't\\(\\).*?do\\(\\)")
+  input
+  |> string.replace("\n", "")
+  |> regexp.replace(re, _, "")
+  |> part1()
 }
