@@ -3,9 +3,7 @@ import gleam/int
 import gleam/list
 
 pub fn part1(input: InputInts) -> Int {
-  input
-  |> list.filter(safe)
-  |> list.length
+  list.count(input, safe)
 }
 
 fn safe(row: List(Int)) -> Bool {
@@ -32,7 +30,5 @@ pub fn part2(input: InputInts) -> Int {
     |> list.any(safe)
   }
 
-  input
-  |> list.filter(safe_combination)
-  |> list.length
+  list.count(input, safe_combination)
 }

@@ -20,5 +20,5 @@ pub fn part2(input: String) -> Int {
   input
   |> string.replace("\n", "")
   |> regexp.replace(re, _, "")
-  |> part1()
+  |> part1
 }
