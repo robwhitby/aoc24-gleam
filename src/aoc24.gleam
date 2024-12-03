@@ -14,10 +14,15 @@ pub fn main() {
   io.println("Hello from aoc24!")
 }
 
-pub fn read_as_strings(filename) -> InputStrings {
+pub fn read(filename) -> String {
   let path = "./inputs/" <> filename
   let assert Ok(content) = simplifile.read(path)
-  string.split(content, "\n")
+  content
+}
+
+pub fn read_as_strings(filename) -> InputStrings {
+  read(filename)
+  |> string.split("\n")
   |> list.map(split)
   |> list.filter(fn(row) { !list.is_empty(row) })
 }
@@ -32,6 +37,6 @@ pub fn read_as_ints(filename) -> InputInts {
   |> list.map(strings_to_ints)
 }
 
-pub fn strings_to_ints(strings: List(String)) -> List(Int) {
+fn strings_to_ints(strings: List(String)) -> List(Int) {
   strings |> list.filter_map(int.parse)
 }

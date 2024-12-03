@@ -1,6 +1,7 @@
 import aoc24
 import day01
 import day02
+import day03
 import gleam/io
 import gleeunit
 import gleeunit/should
@@ -32,4 +33,14 @@ pub fn day02_part1_test() {
 pub fn day02_part2_test() {
   day02.part2(aoc24.read_as_ints("day02_ex.txt")) |> should.equal(4)
   day02.part2(aoc24.read_as_ints("day02.txt")) |> print("02/2")
+}
+
+pub fn day03_part1_test() {
+  day03.part1(aoc24.read("day03_ex.txt")) |> should.equal(161)
+  day03.part1(aoc24.read("day03.txt")) |> print("03/1")
+}
+
+pub fn day03_part2_test() {
+  day03.part2(aoc24.read("day03_ex.txt")) |> should.equal(48)
+  day03.part2(aoc24.read("day03.txt")) |> print("03/2")
 }
