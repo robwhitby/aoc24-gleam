@@ -15,11 +15,27 @@ pub fn read(filename) -> String {
   content
 }
 
-pub fn read_as_strings(filename, delim) -> InputStrings {
+pub fn read_lines(filename: String, parser: fn(String) -> a) -> List(a) {
   read(filename)
   |> string.split("\n")
-  |> list.map(split(_, delim))
-  |> list.filter(fn(row) { !list.is_empty(row) })
+  |> list.filter(fn(line) { !string.is_empty(line) })
+  |> list.map(parser)
+}
+
+pub fn strings(delim: String) -> fn(String) -> List(String) {
+  parser(_, delim, Ok)
+}
+
+pub fn ints(delim: String) -> fn(String) -> List(Int) {
+  parser(_, delim, int.parse)
+}
+
+fn parser(
+  line: String,
+  delim: String,
+  f: fn(String) -> Result(a, Nil),
+) -> List(a) {
+  line |> split(delim) |> list.filter_map(f)
 }
 
 fn split(in: String, delim: String) -> List(String) {
@@ -28,9 +44,4 @@ fn split(in: String, delim: String) -> List(String) {
     _ -> string.split(in, delim)
   }
   |> list.filter(fn(s) { !string.is_empty(s) })
-}
-
-pub fn read_as_ints(filename, delim) -> InputInts {
-  read_as_strings(filename, delim)
-  |> list.map(list.filter_map(_, int.parse))
 }
