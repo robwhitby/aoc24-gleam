@@ -1,9 +1,9 @@
-import aoc24.{type InputInts}
 import gleam/int
 import gleam/list
+import input.{type InputInts}
 
-pub fn part1(input: InputInts) -> Int {
-  list.count(input, safe)
+pub fn part1(in: InputInts) -> Int {
+  list.count(in, safe)
 }
 
 fn safe(row: List(Int)) -> Bool {
@@ -24,11 +24,11 @@ fn safe(row: List(Int)) -> Bool {
   ordered(row) && valid_diffs(row)
 }
 
-pub fn part2(input: InputInts) -> Int {
+pub fn part2(in: InputInts) -> Int {
   let safe_combination = fn(row: List(Int)) -> Bool {
     list.combinations(row, list.length(row) - 1)
     |> list.any(safe)
   }
 
-  list.count(input, safe_combination)
+  list.count(in, safe_combination)
 }
