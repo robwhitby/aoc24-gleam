@@ -1,4 +1,6 @@
+import dir.{type Dir}
 import gleam/dict.{type Dict}
+import gleam/function
 import gleam/list
 import gleam/result
 import gleam/set
@@ -10,12 +12,20 @@ pub type Point =
 pub type Cells(a) =
   Dict(Point, a)
 
+pub type Cell(a) {
+  Cell(point: Point, value: a)
+}
+
 pub type Grid(a) {
   Grid(cells: Cells(a), width: Int, height: Int)
 }
 
-pub fn get(grid: Grid(a), point: Point) -> Result(a, Nil) {
+pub fn value(grid: Grid(a), point: Point) -> Result(a, Nil) {
   dict.get(grid.cells, point)
+}
+
+pub fn cell(grid: Grid(a), point: Point) -> Result(Cell(a), Nil) {
+  value(grid, point) |> result.map(Cell(point, _))
 }
 
 pub fn contains(grid: Grid(a), point: Point) -> Bool {
@@ -33,21 +43,23 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
   Grid(cells, w, list.length(in))
 }
 
-pub fn lines(grid: Grid(a)) -> List(List(a)) {
-  let assert [n, e, s, w] = [#(0, -1), #(1, 0), #(0, 1), #(-1, 0)]
-  let assert [ne, nw, se, sw] = [#(1, -1), #(-1, -1), #(1, 1), #(-1, 1)]
-
+pub fn lines(grid: Grid(a), dirs: List(Dir)) -> List(List(Cell(a))) {
   let line = fn(from: Point, step: Point) {
     yielder.iterate(from, fn(p) { #(p.0 + step.0, p.1 + step.1) })
     |> yielder.take_while(contains(grid, _))
   }
 
-  let ls = fn(from: Point, dirs: List(Point)) { list.map(dirs, line(from, _)) }
+  let lines_from = fn(start: Point, d: Dir, ds: List(Dir)) {
+    line(start, d)
+    |> yielder.map(fn(p: Point) {
+      list.map(list.filter(ds, list.contains(dirs, _)), line(p, _))
+    })
+  }
 
-  let top = line(#(0, 0), e) |> yielder.map(ls(_, [s, sw, se]))
-  let left = line(#(0, 0), s) |> yielder.map(ls(_, [e, ne, se]))
-  let bottom = line(#(0, grid.height - 1), e) |> yielder.map(ls(_, [n, nw, ne]))
-  let right = line(#(grid.width - 1, 0), s) |> yielder.map(ls(_, [w, nw, sw]))
+  let top = lines_from(#(0, 0), dir.e, [dir.s, dir.sw, dir.se])
+  let left = lines_from(#(0, 0), dir.s, [dir.e, dir.ne, dir.se])
+  let bottom = lines_from(#(0, grid.height - 1), dir.e, [dir.n, dir.nw, dir.ne])
+  let right = lines_from(#(grid.width - 1, 0), dir.s, [dir.w, dir.nw, dir.sw])
 
   yielder.concat([top, bottom, left, right])
   |> yielder.to_list
@@ -55,6 +67,24 @@ pub fn lines(grid: Grid(a)) -> List(List(a)) {
   |> list.map(yielder.to_list)
   |> set.from_list
   |> set.to_list
-  |> list.map(list.filter_map(_, get(grid, _)))
+  |> list.map(list.filter_map(_, cell(grid, _)))
   |> list.filter(fn(l) { list.length(l) > 1 })
+}
+
+pub fn line_value(line: List(Cell(a)), acc: fn(List(a)) -> b) -> b {
+  list.map(line, fn(cell) { cell.value })
+  |> acc
+}
+
+pub fn find_in_line(line: List(Cell(a)), values: List(a)) -> List(List(Cell(a))) {
+  let len = list.length(values)
+  list.window(line, len)
+  |> list.filter(fn(w) { line_value(w, function.identity) == values })
+}
+
+pub fn find_in_lines(
+  lines: List(List(Cell(a))),
+  values: List(a),
+) -> List(List(Cell(a))) {
+  list.flat_map(lines, find_in_line(_, values))
 }
