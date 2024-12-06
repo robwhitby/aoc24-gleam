@@ -36,14 +36,18 @@ pub fn move(from: Point, step: Point) -> Point {
   #(from.0 + step.0, from.1 + step.1)
 }
 
+pub fn to_list(grid: Grid(a)) -> List(Cell(a)) {
+  grid.cells
+  |> dict.to_list
+  |> list.map(fn(pair) { Cell(pair.0, pair.1) })
+}
+
 pub fn find(
   grid: Grid(a),
   value_predicate: fn(a) -> Bool,
 ) -> Result(Cell(a), Nil) {
-  grid.cells
-  |> dict.to_list
-  |> list.find(fn(pair) { value_predicate(pair.1) })
-  |> result.map(fn(pair) { Cell(pair.0, pair.1) })
+  to_list(grid)
+  |> list.find(fn(cell) { value_predicate(cell.value) })
 }
 
 pub fn from_list(in: List(List(a))) -> Grid(a) {
@@ -101,4 +105,8 @@ pub fn find_in_lines(
   values: List(a),
 ) -> List(List(Cell(a))) {
   list.flat_map(lines, find_in_line(_, values))
+}
+
+pub fn update(grid: Grid(a), cell: Cell(a)) -> Grid(a) {
+  Grid(dict.insert(grid.cells, cell.point, cell.value), grid.width, grid.height)
 }
