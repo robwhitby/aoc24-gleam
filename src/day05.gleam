@@ -1,16 +1,45 @@
-import gleam/int
 import gleam/list
+import gleam/int
 import gleam/result
 import gleam/string
 import input
+import listx
 
 pub fn part1(in: String) -> Int {
   let data = parse(in)
-
   data.updates
   |> list.filter(fn(u) { list.all(data.rules, passes(u, _)) })
   |> list.map(middle)
   |> int.sum
+}
+
+pub fn part2(in: String) -> Int {
+  let data = parse(in)
+  data.updates
+  |> list.map(fn(u) { #(u, listx.filter_not(data.rules, passes(u, _))) })
+  |> list.filter(fn(p) { !list.is_empty(p.1) })
+  |> list.map(fn(p) { sort(p.0, p.1) })
+  |> list.map(middle)
+  |> int.sum
+}
+
+fn sort(update: Update, rules: List(Rule)) -> Update {
+  sort_rec([], update, rules)
+}
+
+fn sort_rec(sorted: List(Int), update: Update, rules: List(Rule)) -> List(Int) {
+  let is_next = fn(existing, n) {
+    !list.contains(existing, n)
+    && !list.any(rules, fn(r) { r.1 == n && !list.contains(existing, r.0) })
+  }
+
+  case list.length(sorted) == list.length(update) {
+    True -> sorted
+    False -> {
+      let assert Ok(x) = list.find(update, is_next(sorted, _))
+      sort_rec([x, ..sorted], update, rules)
+    }
+  }
 }
 
 fn middle(l: List(Int)) -> Int {

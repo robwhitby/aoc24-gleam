@@ -106,3 +106,13 @@ pub fn day05_part1_test() {
   |> day05.part1
   |> print("05/1")
 }
+
+pub fn day05_part2_test() {
+  input.read("day05_ex.txt")
+  |> day05.part2
+  |> should.equal(123)
+
+  input.read("day05.txt")
+  |> day05.part2
+  |> print("05/2")
+}

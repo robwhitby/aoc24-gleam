@@ -1,6 +1,7 @@
 import gleam/int
 import gleam/list
 import gleam/string
+import listx
 import simplifile
 
 pub type InputStrings =
@@ -18,7 +19,7 @@ pub fn read(filename) -> String {
 pub fn read_lines(filename: String, parser: fn(String) -> a) -> List(a) {
   read(filename)
   |> string.split("\n")
-  |> list.filter(fn(line) { !string.is_empty(line) })
+  |> listx.filter_not(string.is_empty)
   |> list.map(parser)
 }
 
@@ -43,5 +44,5 @@ fn split(in: String, delim: String) -> List(String) {
     "" -> string.to_graphemes(in)
     _ -> string.split(in, delim)
   }
-  |> list.filter(fn(s) { !string.is_empty(s) })
+  |> listx.filter_not(string.is_empty)
 }
