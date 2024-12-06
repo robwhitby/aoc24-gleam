@@ -4,7 +4,7 @@ import gleam/function
 import gleam/list
 import gleam/set
 import gleeunit/should
-import grid.{Cell}
+import grid.{type Cell, Cell}
 
 pub fn grid_test() {
   let g = grid.from_list([[1, 2], [3, 4]])
@@ -18,10 +18,10 @@ pub fn grid_test() {
   dict.size(g.cells) |> should.equal(4)
 }
 
-pub fn grid_is_generic_test() {
-  let g = grid.from_list([[True, False]])
-  grid.value(g, #(0, 0))
-  |> should.equal(Ok(True))
+pub fn find_test() {
+  let g = grid.from_list([[1, 2], [3, 4], [5, 6]])
+  grid.find(g, fn(i) { i == 3 })
+  |> should.equal(Ok(Cell(#(0, 1), 3)))
 }
 
 pub fn grid_lines_test() {

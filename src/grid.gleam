@@ -32,6 +32,20 @@ pub fn contains(grid: Grid(a), point: Point) -> Bool {
   dict.has_key(grid.cells, point)
 }
 
+pub fn move(from: Point, step: Point) -> Point {
+  #(from.0 + step.0, from.1 + step.1)
+}
+
+pub fn find(
+  grid: Grid(a),
+  value_predicate: fn(a) -> Bool,
+) -> Result(Cell(a), Nil) {
+  grid.cells
+  |> dict.to_list
+  |> list.find(fn(pair) { value_predicate(pair.1) })
+  |> result.map(fn(pair) { Cell(pair.0, pair.1) })
+}
+
 pub fn from_list(in: List(List(a))) -> Grid(a) {
   let cells =
     list.index_map(in, fn(row, y) {
@@ -44,15 +58,16 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
 }
 
 pub fn line(grid: Grid(a), from: Point, step: Point) {
-  yielder.iterate(from, fn(p) { #(p.0 + step.0, p.1 + step.1) })
+  yielder.iterate(from, move(_, step))
   |> yielder.take_while(contains(grid, _))
+  |> yielder.filter_map(cell(grid, _))
 }
 
 pub fn lines(grid: Grid(a), dirs: List(Dir)) -> List(List(Cell(a))) {
   let lines_from = fn(start: Point, d: Dir, ds: List(Dir)) {
     line(grid, start, d)
-    |> yielder.map(fn(p: Point) {
-      list.map(list.filter(ds, list.contains(dirs, _)), line(grid, p, _))
+    |> yielder.map(fn(c: Cell(a)) {
+      list.map(list.filter(ds, list.contains(dirs, _)), line(grid, c.point, _))
     })
   }
 
@@ -67,7 +82,6 @@ pub fn lines(grid: Grid(a), dirs: List(Dir)) -> List(List(Cell(a))) {
   |> list.map(yielder.to_list)
   |> set.from_list
   |> set.to_list
-  |> list.map(list.filter_map(_, cell(grid, _)))
   |> list.filter(fn(l) { list.length(l) > 1 })
 }
 
@@ -87,21 +101,4 @@ pub fn find_in_lines(
   values: List(a),
 ) -> List(List(Cell(a))) {
   list.flat_map(lines, find_in_line(_, values))
-}
-
-pub fn line_while(
-  grid: Grid(a),
-  start: Point,
-  dir: Dir,
-  predicate: fn(Cell(a)) -> Bool,
-) -> List(Cell(a)) {
-  line(grid, start, dir)
-  |> yielder.take_while(fn(p) {
-    case cell(grid, p) {
-      Ok(c) -> predicate(c)
-      _ -> False
-    }
-  })
-  |> yielder.to_list
-  |> list.filter_map(cell(grid, _))
 }

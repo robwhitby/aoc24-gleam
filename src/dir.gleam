@@ -22,3 +22,8 @@ pub const all = [n, e, s, w, ne, nw, se, sw]
 pub const nesw = [n, e, s, w]
 
 pub const diag = [ne, nw, se, sw]
+
+pub fn rotate90(d: Dir) -> Dir {
+  #(-d.1, d.0)
+}
+ 
