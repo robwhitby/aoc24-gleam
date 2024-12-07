@@ -1,5 +1,5 @@
-import parallel_map.{MatchSchedulersOnline}
 import gleam/list
+import parallel_map.{MatchSchedulersOnline}
 
 pub fn filter_not(in l: List(a), discarding predicate: fn(a) -> Bool) -> List(a) {
   list.filter(l, fn(a) { !predicate(a) })

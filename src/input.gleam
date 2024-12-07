@@ -28,7 +28,7 @@ pub fn strings(delim: String) -> fn(String) -> List(String) {
 }
 
 pub fn ints(delim: String) -> fn(String) -> List(Int) {
-  parser(_, delim, int.parse)
+  fn(s) { string.replace(s, ":", "") |> parser(delim, int.parse) }
 }
 
 fn parser(
