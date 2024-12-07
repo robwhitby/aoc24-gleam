@@ -7,7 +7,8 @@ pub fn part1(input: InputInts) -> Int {
   let ops = [int.add, int.multiply]
 
   input
-  |> list.filter_map(possible(_, ops))
+  |> list.filter(possible(_, ops))
+  |> list.filter_map(list.first)
   |> int.sum
 }
 
@@ -21,22 +22,17 @@ pub fn part2(input: InputInts) -> Int {
   ]
 
   input
-  |> list.filter_map(possible(_, ops))
+  |> list.filter(possible(_, ops))
+  |> list.filter_map(list.first)
   |> int.sum
 }
 
-type Op =
-  fn(Int, Int) -> Int
-
-fn possible(row: List(Int), ops: List(Op)) {
-  let assert [answer, head, ..tail] = row
-  let ok =
-    list.fold(tail, [head], fn(results, i) {
-      list.flat_map(results, fn(r) { list.map(ops, fn(op) { op(r, i) }) })
-    })
-    |> list.contains(answer)
-  case ok {
-    True -> Ok(answer)
-    False -> Error("nope")
+fn possible(row: List(Int), ops: List(fn(Int, Int) -> Int)) -> Bool {
+  case row {
+    [answer, value] -> answer == value
+    [answer, i, j, ..tail] -> {
+      list.any(ops, fn(op) { possible([answer, op(i, j), ..tail], ops) })
+    }
+    _ -> False
   }
 }
