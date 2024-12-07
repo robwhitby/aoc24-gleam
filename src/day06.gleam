@@ -4,6 +4,7 @@ import gleam/result
 import gleam/set.{type Set}
 import grid.{type Cell, type Grid, Cell}
 import input.{type InputStrings}
+import listx
 
 pub fn part1(input: InputStrings) -> Int {
   let g = grid.from_list(input)
@@ -21,14 +22,15 @@ pub fn part2(input: InputStrings) -> Int {
 
   walk(g, start, to_dir(start.value), set.new())
   |> result.map(set.map(_, fn(pair) { pair.0 }))
-  |> result.unwrap(set.new())
-  |> set.filter(fn(cell) { cell.value == "." })
-  |> set.filter(fn(cell) {
+  |> result.map(set.to_list)
+  |> result.unwrap([])
+  |> list.filter(fn(cell) { cell.value == "." })
+  |> listx.pmap(fn(cell) {
     grid.update(g, Cell(cell.point, "#"))
     |> walk(start, to_dir(start.value), set.new())
     |> result.is_error
   })
-  |> set.size
+  |> list.count(fn(x) { x == Ok(True) })
 }
 
 pub fn walk(

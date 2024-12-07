@@ -128,24 +128,12 @@ pub fn day06_part1_test() {
   |> print("06/1")
 }
 
-pub fn day06_part2ex_test() {
+pub fn day06_part2_test() {
   input.read_lines("day06_ex.txt", input.strings(""))
   |> day06.part2
   |> should.equal(6)
-}
 
-pub opaque type TestSpec(a) {
-  Timeout(Int, fn() -> a)
-}
-
-pub fn slow(f: fn() -> a) -> TestSpec(a) {
-  Timeout(60, f)
-}
-
-pub fn day06_part2_test_() {
-  slow(fn() {
-    input.read_lines("day06.txt", input.strings(""))
-    |> day06.part2
-    |> print("06/2")
-  })
+  input.read_lines("day06.txt", input.strings(""))
+  |> day06.part2
+  |> print("06/2")
 }
