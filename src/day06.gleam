@@ -5,6 +5,7 @@ import gleam/set.{type Set}
 import grid.{type Cell, type Grid, Cell}
 import input.{type InputStrings}
 import listx
+import point
 
 pub fn part1(input: InputStrings) -> Int {
   let g = grid.from_list(input)
@@ -39,7 +40,7 @@ pub fn walk(
   d: Dir,
   visited: Set(#(Cell(String), Dir)),
 ) {
-  let next = grid.cell(g, grid.move(pos.point, d))
+  let next = grid.cell(g, point.add(pos.point, d))
   let v1 = set.insert(visited, #(pos, d))
   case next {
     Ok(Cell(_, "#")) -> walk(g, pos, dir.rotate90(d), v1)
@@ -54,11 +55,12 @@ pub fn walk(
 
 const arrows = ["^", "v", ">", "<"]
 
-fn to_dir(arrow: String) -> dir.Dir {
+fn to_dir(arrow: String) -> Dir {
   case arrow {
     "^" -> dir.n
     ">" -> dir.e
     "v" -> dir.s
-    _ -> dir.w
+    "<" -> dir.w
+    _ -> panic as "invalid direction"
   }
 }

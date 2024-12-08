@@ -2,22 +2,34 @@ import dir
 import gleam/list
 import gleam/set
 import gleam/string
-import grid
+import gleam/yielder
+import grid.{Cell}
 import input.{type InputStrings}
 
 pub fn part1(in: InputStrings) -> Int {
-  grid.from_list(in)
-  |> grid.lines(dir.all)
-  |> grid.find_in_lines(string.to_graphemes("XMAS"))
-  |> list.length
+  let g = grid.from_list(in)
+  grid.filter(g, fn(v) { v == "X" })
+  |> list.flat_map(fn(cell) { grid.lines(g, cell.point, dir.all) })
+  |> list.count(fn(line) {
+    yielder.take(line, 4)
+    |> yielder.to_list()
+    |> list.map(fn(cell) { cell.value })
+    |> string.concat
+    == "XMAS"
+  })
 }
 
 pub fn part2(in: InputStrings) -> Int {
+  let g = grid.from_list(in)
   let a =
-    grid.from_list(in)
-    |> grid.lines(dir.diag)
-    |> grid.find_in_lines(string.to_graphemes("MAS"))
-    |> list.filter_map(fn(mas) { list.find(mas, fn(c) { c.value == "A" }) })
+    grid.filter(g, fn(v) { v == "M" })
+    |> list.flat_map(fn(cell) { grid.lines(g, cell.point, dir.diagonals) })
+    |> list.filter_map(fn(line) {
+      case yielder.take(line, 3) |> yielder.to_list {
+        [Cell(_, "M"), Cell(p, "A"), Cell(_, "S")] -> Ok(p)
+        _ -> Error(Nil)
+      }
+    })
 
   list.length(a) - set.size(set.from_list(a))
 }

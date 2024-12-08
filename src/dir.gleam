@@ -1,28 +1,30 @@
+import point.{type Point, Point}
+
 pub type Dir =
-  #(Int, Int)
+  Point
 
-pub const n = #(0, -1)
+pub const n = Point(0, -1)
 
-pub const e = #(1, 0)
+pub const e = Point(1, 0)
 
-pub const s = #(0, 1)
+pub const s = Point(0, 1)
 
-pub const w = #(-1, 0)
+pub const w = Point(-1, 0)
 
-pub const ne = #(1, -1)
+pub const ne = Point(1, -1)
 
-pub const nw = #(-1, -1)
+pub const nw = Point(-1, -1)
 
-pub const se = #(1, 1)
+pub const se = Point(1, 1)
 
-pub const sw = #(-1, 1)
+pub const sw = Point(-1, 1)
 
 pub const all = [n, e, s, w, ne, nw, se, sw]
 
 pub const nesw = [n, e, s, w]
 
-pub const diag = [ne, nw, se, sw]
+pub const diagonals = [ne, nw, se, sw]
 
-pub fn rotate90(d: Dir) -> Dir {
-  #(-d.1, d.0)
+pub fn rotate90(d: Dir) {
+  Point(-d.y, d.x)
 }
