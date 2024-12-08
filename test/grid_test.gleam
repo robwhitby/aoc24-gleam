@@ -1,9 +1,7 @@
 import dir
 import gleam/dict
 import gleam/function
-import gleam/io
 import gleam/list
-import gleam/result
 import gleam/set
 import gleeunit/should
 import grid.{type Cell, Cell}

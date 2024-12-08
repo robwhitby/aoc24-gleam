@@ -50,6 +50,11 @@ pub fn find(
   |> list.find(fn(cell) { value_predicate(cell.value) })
 }
 
+pub fn filter(grid: Grid(a), value_predicate: fn(a) -> Bool) -> List(Cell(a)) {
+  to_list(grid)
+  |> list.filter(fn(cell) { value_predicate(cell.value) })
+}
+
 pub fn from_list(in: List(List(a))) -> Grid(a) {
   let cells =
     list.index_map(in, fn(row, y) {
@@ -84,8 +89,7 @@ pub fn lines(grid: Grid(a), dirs: List(Dir)) -> List(List(Cell(a))) {
   |> yielder.to_list
   |> list.flatten
   |> list.map(yielder.to_list)
-  |> set.from_list
-  |> set.to_list
+  |> list.unique
   |> list.filter(fn(l) { list.length(l) > 1 })
 }
 
