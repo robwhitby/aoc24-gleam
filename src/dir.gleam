@@ -26,4 +26,3 @@ pub const diag = [ne, nw, se, sw]
 pub fn rotate90(d: Dir) -> Dir {
   #(-d.1, d.0)
 }
- 
