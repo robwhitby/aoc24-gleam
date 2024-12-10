@@ -70,3 +70,29 @@ pub fn lines(
 ) -> List(Yielder(Cell(a))) {
   list.map(steps, line(grid, from, _))
 }
+
+
+pub type Stepper(a) {
+  Stepper(
+    steps: List(Point),
+    valid_step: fn(Cell(a), Cell(a)) -> Bool,
+    stop: fn(Cell(a)) -> Bool,
+  )
+}
+
+pub fn routes(
+  g: Grid(a),
+  from: Cell(a),
+  stepper: Stepper(a),
+) -> List(Cell(a)) {
+  from.point
+  |> point.neighbours(stepper.steps)
+  |> list.filter_map(cell(g, _))
+  |> list.filter(stepper.valid_step(from, _))
+  |> list.flat_map(fn(next) {
+    case stepper.stop(next) {
+      True -> [next]
+      False -> routes(g, next, stepper)
+    }
+  })
+}

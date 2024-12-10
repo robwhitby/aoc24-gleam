@@ -1,33 +1,33 @@
 import dir
 import gleam/list
-import grid.{type Cell, type Grid, Cell}
+import grid.{Stepper}
 import input.{type InputInts}
-import point
 
 pub fn part1(input: InputInts) -> Int {
   let g = grid.from_list(input)
-  grid.filter(g, fn(v) { v == 0 })
-  |> list.map(routes(g, _))
+  let stepper =
+    Stepper(
+      steps: dir.nesw,
+      valid_step: fn(from, to) { to.value == from.value + 1 },
+      stop: fn(cell) { cell.value == 9 },
+    )
+
+  grid.filter(g, fn(value) { value == 0 })
+  |> list.map(grid.routes(g, _, stepper))
   |> list.flat_map(list.unique)
   |> list.length
 }
 
 pub fn part2(input: InputInts) -> Int {
   let g = grid.from_list(input)
-  grid.filter(g, fn(v) { v == 0 })
-  |> list.flat_map(routes(g, _))
-  |> list.length
-}
+  let stepper =
+    Stepper(
+      steps: dir.nesw,
+      valid_step: fn(from, to) { to.value == from.value + 1 },
+      stop: fn(cell) { cell.value == 9 },
+    )
 
-pub fn routes(g: Grid(Int), from: Cell(Int)) -> List(Cell(Int)) {
-  from.point
-  |> point.neighbours(dir.nesw)
-  |> list.filter_map(grid.cell(g, _))
-  |> list.filter(fn(n) { n.value == from.value + 1 })
-  |> list.flat_map(fn(n) {
-    case n {
-      Cell(_, 9) -> [n]
-      Cell(..) -> routes(g, n)
-    }
-  })
+  grid.filter(g, fn(value) { value == 0 })
+  |> list.flat_map(grid.routes(g, _, stepper))
+  |> list.length
 }

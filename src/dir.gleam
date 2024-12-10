@@ -1,8 +1,5 @@
 import point.{type Point, Point}
 
-pub type Dir =
-  Point
-
 pub const n = Point(0, -1)
 
 pub const e = Point(1, 0)
@@ -25,6 +22,6 @@ pub const nesw = [n, e, s, w]
 
 pub const diagonals = [ne, nw, se, sw]
 
-pub fn rotate90(d: Dir) {
+pub fn rotate90(d: Point) {
   Point(-d.y, d.x)
 }

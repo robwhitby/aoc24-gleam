@@ -1,11 +1,11 @@
-import dir.{type Dir}
+import dir
 import gleam/list
 import gleam/result
 import gleam/set.{type Set}
 import grid.{type Cell, type Grid, Cell}
 import input.{type InputStrings}
 import listx
-import point
+import point.{type Point}
 
 pub fn part1(input: InputStrings) -> Int {
   let g = grid.from_list(input)
@@ -37,8 +37,8 @@ pub fn part2(input: InputStrings) -> Int {
 pub fn walk(
   g: Grid(String),
   pos: Cell(String),
-  d: Dir,
-  visited: Set(#(Cell(String), Dir)),
+  d: Point,
+  visited: Set(#(Cell(String), Point)),
 ) {
   let next = grid.cell(g, point.add(pos.point, d))
   let v1 = set.insert(visited, #(pos, d))
@@ -55,7 +55,7 @@ pub fn walk(
 
 const arrows = ["^", "v", ">", "<"]
 
-fn to_dir(arrow: String) -> Dir {
+fn to_dir(arrow: String) {
   case arrow {
     "^" -> dir.n
     ">" -> dir.e
