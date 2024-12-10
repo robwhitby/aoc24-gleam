@@ -4,10 +4,14 @@ import gleam/set
 import gleam/string
 import gleam/yielder
 import grid.{Cell}
-import input.{type InputStrings}
+import input
 
-pub fn part1(in: InputStrings) -> Int {
-  let g = grid.from_list(in)
+fn parse(in: List(String)) {
+  input.string_parser(in, "")
+}
+
+pub fn part1(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   grid.filter(g, fn(v) { v == "X" })
   |> list.flat_map(fn(cell) { grid.lines(g, cell.point, dir.all) })
   |> list.count(fn(line) {
@@ -19,8 +23,8 @@ pub fn part1(in: InputStrings) -> Int {
   })
 }
 
-pub fn part2(in: InputStrings) -> Int {
-  let g = grid.from_list(in)
+pub fn part2(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   let a =
     grid.filter(g, fn(v) { v == "M" })
     |> list.flat_map(fn(cell) { grid.lines(g, cell.point, dir.diagonals) })

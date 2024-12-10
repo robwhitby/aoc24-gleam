@@ -2,10 +2,9 @@ import gleam/int
 import gleam/list
 import gleam/result
 import gleam/string
-import input
 import listx
 
-pub fn part1(in: String) -> Int {
+pub fn part1(in: List(String)) -> Int {
   let data = parse(in)
   data.updates
   |> list.filter(fn(u) { list.all(data.rules, passes(u, _)) })
@@ -13,7 +12,7 @@ pub fn part1(in: String) -> Int {
   |> int.sum
 }
 
-pub fn part2(in: String) -> Int {
+pub fn part2(in: List(String)) -> Int {
   let data = parse(in)
   data.updates
   |> list.map(fn(u) { #(u, listx.filter_not(data.rules, passes(u, _))) })
@@ -66,21 +65,24 @@ type Input {
   Input(rules: List(Rule), updates: List(Update))
 }
 
-fn parse(in: String) -> Input {
-  let lines = string.split(in, "\n")
+fn parse(in: List(String)) -> Input {
   let rules =
-    lines
+    in
     |> list.filter(string.contains(_, "|"))
-    |> list.map(input.ints("|"))
+    |> list.map(fn(line) {
+      string.split(line, "|") |> list.filter_map(int.parse)
+    })
     |> list.map(fn(ints) {
       let assert [a, b] = ints
       #(a, b)
     })
 
   let updates =
-    lines
+    in
     |> list.filter(string.contains(_, ","))
-    |> list.map(input.ints(","))
+    |> list.map(fn(line) {
+      string.split(line, ",") |> list.filter_map(int.parse)
+    })
 
   Input(rules, updates)
 }

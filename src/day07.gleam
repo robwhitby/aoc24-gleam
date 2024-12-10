@@ -1,13 +1,18 @@
 import gleam/int
 import gleam/list
 import gleam/result
-import input.{type InputInts}
+import input
 
-pub fn part1(input: InputInts) -> Int {
-  calc(input, [int.add, int.multiply])
+fn parse(in: List(String)) {
+  input.int_parser(in, " ")
 }
 
-pub fn part2(input: InputInts) -> Int {
+pub fn part1(in: List(String)) -> Int {
+  parse(in)
+  |> calc([int.add, int.multiply])
+}
+
+pub fn part2(in: List(String)) -> Int {
   let ops = [
     int.add,
     int.multiply,
@@ -15,7 +20,9 @@ pub fn part2(input: InputInts) -> Int {
       result.unwrap(int.parse(int.to_string(i) <> int.to_string(j)), 0)
     },
   ]
-  calc(input, ops)
+
+  parse(in)
+  |> calc(ops)
 }
 
 fn calc(input, ops) {

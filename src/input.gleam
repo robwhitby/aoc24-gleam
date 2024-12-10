@@ -1,42 +1,40 @@
 import gleam/int
 import gleam/list
-import gleam/string
+import gleam/string.{concat}
 import listx
 import simplifile
 
-pub type InputStrings =
-  List(List(String))
-
-pub type InputInts =
-  List(List(Int))
-
-pub fn read(filename) -> String {
-  let path = "./inputs/" <> filename
-  let assert Ok(content) = simplifile.read(path)
-  content
+pub fn read(name: String) -> List(String) {
+  let path = concat(["./inputs/day", name <> ".txt"])
+  case simplifile.read(path) {
+    Ok(content) -> {
+      string.split(content, "\n")
+      |> listx.filter_not(string.is_empty)
+    }
+    Error(_) -> panic as string.concat(["error reading ", path])
+  }
 }
 
-pub fn read_lines(filename: String, parser: fn(String) -> a) -> List(a) {
-  read(filename)
-  |> string.split("\n")
-  |> listx.filter_not(string.is_empty)
-  |> list.map(parser)
+pub fn string_parser(lines: List(String), delim: String) -> List(List(String)) {
+  parser(lines, delim, Ok)
 }
 
-pub fn strings(delim: String) -> fn(String) -> List(String) {
-  parser(_, delim, Ok)
-}
-
-pub fn ints(delim: String) -> fn(String) -> List(Int) {
-  fn(s) { string.replace(s, ":", "") |> parser(delim, int.parse) }
+pub fn int_parser(lines: List(String), delim: String) -> List(List(Int)) {
+  let f = fn(s) { string.replace(s, ":", "") |> int.parse }
+  parser(lines, delim, f)
 }
 
 fn parser(
-  line: String,
+  lines: List(String),
   delim: String,
   f: fn(String) -> Result(a, Nil),
-) -> List(a) {
-  line |> split(delim) |> list.filter_map(f)
+) -> List(List(a)) {
+  lines
+  |> list.map(fn(line) {
+    line
+    |> split(delim)
+    |> list.filter_map(f)
+  })
 }
 
 fn split(in: String, delim: String) -> List(String) {

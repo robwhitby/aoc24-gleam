@@ -3,12 +3,16 @@ import gleam/list
 import gleam/result
 import gleam/set.{type Set}
 import grid.{type Cell, type Grid, Cell}
-import input.{type InputStrings}
+import input
 import listx
 import point.{type Point}
 
-pub fn part1(input: InputStrings) -> Int {
-  let g = grid.from_list(input)
+fn parse(in: List(String)) {
+  input.string_parser(in, "")
+}
+
+pub fn part1(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   let assert Ok(start) = grid.find(g, list.contains(arrows, _))
 
   walk(g, start, to_dir(start.value), set.new())
@@ -17,8 +21,8 @@ pub fn part1(input: InputStrings) -> Int {
   |> result.unwrap(0)
 }
 
-pub fn part2(input: InputStrings) -> Int {
-  let g = grid.from_list(input)
+pub fn part2(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   let assert Ok(start) = grid.find(g, list.contains(arrows, _))
 
   walk(g, start, to_dir(start.value), set.new())

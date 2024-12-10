@@ -1,10 +1,14 @@
 import dir
 import gleam/list
 import grid.{Stepper}
-import input.{type InputInts}
+import input
 
-pub fn part1(input: InputInts) -> Int {
-  let g = grid.from_list(input)
+fn parse(in: List(String)) {
+  input.int_parser(in, "")
+}
+
+pub fn part1(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   let stepper =
     Stepper(
       steps: dir.nesw,
@@ -18,8 +22,8 @@ pub fn part1(input: InputInts) -> Int {
   |> list.length
 }
 
-pub fn part2(input: InputInts) -> Int {
-  let g = grid.from_list(input)
+pub fn part2(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   let stepper =
     Stepper(
       steps: dir.nesw,

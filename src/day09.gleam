@@ -1,14 +1,15 @@
 import gleam/int
 import gleam/list
 import gleam/result
+import input
 
-pub fn part1(in: List(Int)) -> Int {
+pub fn part1(in: List(String)) -> Int {
   parse(in)
   |> defrag([])
   |> checksum
 }
 
-pub fn part2(in: List(Int)) -> Int {
+pub fn part2(in: List(String)) -> Int {
   parse(in)
   |> defrag_files([])
   |> checksum
@@ -22,8 +23,11 @@ pub type Entry {
   Space(length: Int)
 }
 
-fn parse(in: List(Int)) -> Disk {
-  list.index_map(in, fn(len, idx) {
+fn parse(in: List(String)) -> Disk {
+  input.int_parser(in, "")
+  |> list.first()
+  |> result.unwrap([])
+  |> list.index_map(fn(len, idx) {
     case int.is_even(idx) {
       True -> Ok(File(idx / 2, len))
       False -> Ok(Space(len))
@@ -45,14 +49,13 @@ fn checksum(disk: Disk) -> Int {
 }
 
 fn defrag(disk: Disk, out: Disk) -> Disk {
-  
   let is_space = fn(e: Entry) {
     case e {
       Space(_) -> True
       _ -> False
     }
   }
-  
+
   case disk {
     [] -> list.reverse(out)
     [File(_, _) as f, ..tail] -> defrag(tail, [f, ..out])
@@ -110,4 +113,3 @@ fn replace_space(disk: Disk, file: Entry) -> #(Disk, Entry) {
     _ -> #(disk, file)
   }
 }
-

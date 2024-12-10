@@ -2,18 +2,22 @@ import gleam/dict
 import gleam/list
 import gleam/yielder
 import grid.{type Grid}
-import input.{type InputStrings}
+import input
 import point.{type Point, Point}
 
-pub fn part1(input: InputStrings) -> Int {
-  let g = grid.from_list(input)
+fn parse(in: List(String)) {
+  input.string_parser(in, "")
+}
+
+pub fn part1(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   antenna_pairs(g)
   |> antinodes_part1(g)
   |> list.length
 }
 
-pub fn part2(input: InputStrings) -> Int {
-  let g = grid.from_list(input)
+pub fn part2(in: List(String)) -> Int {
+  let g = grid.from_list(parse(in))
   antenna_pairs(g)
   |> antinodes_part2(g)
   |> list.length
