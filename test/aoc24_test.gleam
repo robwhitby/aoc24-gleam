@@ -215,3 +215,13 @@ pub fn day10_part1_test() {
   |> day10.part1
   |> print("10/1")
 }
+
+pub fn day10_part2_test() {
+  input.read_lines("day10_ex.txt", input.ints(""))
+  |> day10.part2
+  |> should.equal(81)
+
+  input.read_lines("day10.txt", input.ints(""))
+  |> day10.part2
+  |> print("10/2")
+}

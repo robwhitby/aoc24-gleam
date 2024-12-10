@@ -1,10 +1,18 @@
+import dir
 import gleam/list
 import grid.{type Cell, type Grid, Cell}
 import input.{type InputInts}
-import dir
 import point
 
 pub fn part1(input: InputInts) -> Int {
+  let g = grid.from_list(input)
+  grid.filter(g, fn(v) { v == 0 })
+  |> list.map(routes(g, _))
+  |> list.flat_map(list.unique)
+  |> list.length
+}
+
+pub fn part2(input: InputInts) -> Int {
   let g = grid.from_list(input)
   grid.filter(g, fn(v) { v == 0 })
   |> list.flat_map(routes(g, _))
@@ -22,5 +30,4 @@ pub fn routes(g: Grid(Int), from: Cell(Int)) -> List(Cell(Int)) {
       Cell(..) -> routes(g, n)
     }
   })
-  |> list.unique
 }
