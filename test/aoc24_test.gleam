@@ -7,6 +7,7 @@ import day06
 import day07
 import day08
 import day09
+import day10
 import gleam/io
 import gleeunit
 import gleeunit/should
@@ -203,4 +204,14 @@ pub fn day09_part2_test() {
   |> input.ints("")
   |> day09.part2
   |> print("09/2")
+}
+
+pub fn day10_part1_test() {
+  input.read_lines("day10_ex.txt", input.ints(""))
+  |> day10.part1
+  |> should.equal(36)
+
+  input.read_lines("day10.txt", input.ints(""))
+  |> day10.part1
+  |> print("10/1")
 }
