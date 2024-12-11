@@ -12,7 +12,7 @@ pub type Day {
 }
 
 pub fn build_tests(days: List(Day)) {
-  let _ = simplifile.delete(output_file)
+  let _ = simplifile.write(output_file, "")
   list.flat_map(days, fn(day) {
     [
       build_part(day, 1, day.part1, day.example1),
