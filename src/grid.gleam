@@ -5,6 +5,7 @@ import gleam/list
 import gleam/result
 import gleam/set.{type Set}
 import gleam/yielder.{type Yielder}
+import listx
 import point.{type Point, Point}
 
 pub type Cells(a) =
@@ -138,6 +139,28 @@ pub fn perimeter(area: Set(Cell(a))) -> Int {
   set.to_list(points)
   |> list.map(fn(p) {
     list.count(point.neighbours(p, dir.nesw), fn(n) { !set.contains(points, n) })
+  })
+  |> int.sum
+}
+
+pub fn sides(area: Set(Cell(a))) -> Int {
+  let points = set.map(area, fn(c) { c.point })
+  let is_edge = fn(p, d) { !set.contains(points, point.add(p, d)) }
+
+  [
+    set.filter(points, is_edge(_, dir.n)),
+    set.filter(points, is_edge(_, dir.s)),
+    set.filter(points, is_edge(_, dir.e)) |> set.map(point.flip),
+    set.filter(points, is_edge(_, dir.w)) |> set.map(point.flip),
+  ]
+  |> list.flat_map(fn(edge) {
+    edge
+    |> set.to_list
+    |> list.group(fn(p) { p.y })
+    |> dict.map_values(fn(_, ps) {
+      list.map(ps, fn(p) { p.x }) |> listx.count_contiguous
+    })
+    |> dict.values
   })
   |> int.sum
 }

@@ -15,3 +15,7 @@ pub fn subtract(from: Point, step: Point) -> Point {
 pub fn neighbours(from: Point, steps: List(Point)) -> List(Point) {
   steps |> list.map(add(from, _))
 }
+
+pub fn flip(point: Point) -> Point {
+  Point(point.y, point.x)
+}

@@ -18,5 +18,7 @@ pub fn part1(in: List(String)) -> Int {
 
 pub fn part2(in: List(String)) -> Int {
   parse(in)
-  0
+  |> grid.areas
+  |> list.map(fn(area) { set.size(area) * grid.sides(area) })
+  |> int.sum
 }
