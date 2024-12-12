@@ -44,7 +44,7 @@ pub fn walk(
   d: Point,
   visited: Set(#(Cell(String), Point)),
 ) {
-  let next = grid.cell(g, point.add(pos.point, d))
+  let next = grid.cell_at(g, point.add(pos.point, d))
   let v1 = set.insert(visited, #(pos, d))
   case next {
     Ok(Cell(_, "#")) -> walk(g, pos, dir.rotate90(d), v1)

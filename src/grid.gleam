@@ -1,6 +1,9 @@
+import dir
 import gleam/dict.{type Dict}
+import gleam/int
 import gleam/list
 import gleam/result
+import gleam/set.{type Set}
 import gleam/yielder.{type Yielder}
 import point.{type Point, Point}
 
@@ -15,7 +18,7 @@ pub type Grid(a) {
   Grid(cells: Cells(a), width: Int, height: Int)
 }
 
-pub fn cell(grid: Grid(a), point: Point) -> Result(Cell(a), Nil) {
+pub fn cell_at(grid: Grid(a), point: Point) -> Result(Cell(a), Nil) {
   dict.get(grid.cells, point) |> result.map(Cell(point, _))
 }
 
@@ -60,7 +63,7 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
 pub fn line(grid: Grid(a), from: Point, step: Point) -> Yielder(Cell(a)) {
   yielder.iterate(from, point.add(_, step))
   |> yielder.take_while(contains(grid, _))
-  |> yielder.filter_map(cell(grid, _))
+  |> yielder.filter_map(cell_at(grid, _))
 }
 
 pub fn lines(
@@ -71,7 +74,6 @@ pub fn lines(
   list.map(steps, line(grid, from, _))
 }
 
-
 pub type Stepper(a) {
   Stepper(
     steps: List(Point),
@@ -80,14 +82,10 @@ pub type Stepper(a) {
   )
 }
 
-pub fn routes(
-  g: Grid(a),
-  from: Cell(a),
-  stepper: Stepper(a),
-) -> List(Cell(a)) {
+pub fn routes(g: Grid(a), from: Cell(a), stepper: Stepper(a)) -> List(Cell(a)) {
   from.point
   |> point.neighbours(stepper.steps)
-  |> list.filter_map(cell(g, _))
+  |> list.filter_map(cell_at(g, _))
   |> list.filter(stepper.valid_step(from, _))
   |> list.flat_map(fn(next) {
     case stepper.stop(next) {
@@ -95,4 +93,51 @@ pub fn routes(
       False -> routes(g, next, stepper)
     }
   })
+}
+
+pub fn area(g: Grid(a), from: Cell(a)) -> Set(Cell(a)) {
+  area_rec(g, [from], set.new())
+}
+
+fn area_rec(
+  g: Grid(a),
+  from: List(Cell(a)),
+  found: Set(Cell(a)),
+) -> Set(Cell(a)) {
+  case from {
+    [] -> found
+    [c, ..tail] -> {
+      point.neighbours(c.point, dir.nesw)
+      |> list.filter_map(cell_at(g, _))
+      |> list.filter(fn(n) { c.value == n.value && !set.contains(found, n) })
+      |> fn(next) {
+        area_rec(g, list.flatten([next, tail]), set.insert(found, c))
+      }
+    }
+  }
+}
+
+pub fn areas(g: Grid(a)) -> List(Set(Cell(a))) {
+  areas_rec(g, [], to_list(g))
+}
+
+fn areas_rec(g: Grid(a), found: List(Set(Cell(a))), remaining: List(Cell(a))) {
+  case remaining {
+    [] -> found
+    [cell, ..rest] -> {
+      case list.any(found, fn(area) { set.contains(area, cell) }) {
+        True -> areas_rec(g, found, rest)
+        False -> areas_rec(g, [area(g, cell), ..found], rest)
+      }
+    }
+  }
+}
+
+pub fn perimeter(area: Set(Cell(a))) -> Int {
+  let points = set.map(area, fn(c) { c.point })
+  set.to_list(points)
+  |> list.map(fn(p) {
+    list.count(point.neighbours(p, dir.nesw), fn(n) { !set.contains(points, n) })
+  })
+  |> int.sum
 }

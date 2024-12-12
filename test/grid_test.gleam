@@ -8,10 +8,10 @@ pub fn grid_test() {
   g.width |> should.equal(3)
   g.height |> should.equal(2)
 
-  grid.cell(g, Point(0, 0)) |> should.equal(Ok(Cell(Point(0, 0), 1)))
-  grid.cell(g, Point(1, 1)) |> should.equal(Ok(Cell(Point(1, 1), 5)))
+  grid.cell_at(g, Point(0, 0)) |> should.equal(Ok(Cell(Point(0, 0), 1)))
+  grid.cell_at(g, Point(1, 1)) |> should.equal(Ok(Cell(Point(1, 1), 5)))
 
-  grid.cell(g, Point(5, 0)) |> should.equal(Error(Nil))
+  grid.cell_at(g, Point(5, 0)) |> should.equal(Error(Nil))
 
   dict.size(g.cells) |> should.equal(6)
 }
