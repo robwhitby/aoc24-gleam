@@ -10,7 +10,7 @@ type Stones =
   Dict(Int, Int)
 
 fn parse(in: List(String)) -> Stones {
-  input.int_parser(in, " ")
+  input.int_parser(in, False)
   |> list.first
   |> result.unwrap([])
   |> list.fold(dict.new(), fn(d, i) { dict.insert(d, i, 1) })

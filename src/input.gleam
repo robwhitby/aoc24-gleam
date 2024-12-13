@@ -1,5 +1,6 @@
 import gleam/int
 import gleam/list
+import gleam/regexp
 import gleam/string.{concat}
 import listx
 import simplifile
@@ -16,24 +17,17 @@ pub fn read(name: String) -> List(String) {
 }
 
 pub fn string_parser(lines: List(String), delim: String) -> List(List(String)) {
-  parser(lines, delim, Ok)
+  list.map(lines, split(_, delim))
 }
 
-pub fn int_parser(lines: List(String), delim: String) -> List(List(Int)) {
-  let f = fn(s) { string.replace(s, ":", "") |> int.parse }
-  parser(lines, delim, f)
-}
-
-fn parser(
-  lines: List(String),
-  delim: String,
-  f: fn(String) -> Result(a, Nil),
-) -> List(List(a)) {
-  lines
-  |> list.map(fn(line) {
-    line
-    |> split(delim)
-    |> list.filter_map(f)
+pub fn int_parser(lines: List(String), single_digits: Bool) -> List(List(Int)) {
+  let assert Ok(re) = regexp.from_string("[^\\d+]")
+  list.map(lines, fn(line) {
+    case single_digits {
+      True -> split(line, "")
+      False -> regexp.replace(re, line, " ") |> split(" ")
+    }
+    |> list.filter_map(int.parse)
   })
 }
 

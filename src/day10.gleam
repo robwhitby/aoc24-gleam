@@ -4,7 +4,7 @@ import grid.{Stepper}
 import input
 
 fn parse(in: List(String)) {
-  input.int_parser(in, "")
+  input.int_parser(in, True)
 }
 
 pub fn part1(in: List(String)) -> Int {

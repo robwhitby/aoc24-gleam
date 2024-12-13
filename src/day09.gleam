@@ -24,7 +24,7 @@ pub type Entry {
 }
 
 fn parse(in: List(String)) -> Disk {
-  input.int_parser(in, "")
+  input.int_parser(in, True)
   |> list.first()
   |> result.unwrap([])
   |> list.index_map(fn(len, idx) {
