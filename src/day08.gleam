@@ -41,7 +41,7 @@ fn antinodes_part1(pairs: List(#(Point, Point)), g: Grid(a)) {
   })
   |> list.flatten
   |> list.unique
-  |> list.filter(grid.contains(g, _))
+  |> list.filter(grid.in_bounds(g, _))
 }
 
 fn antinodes_part2(pairs: List(#(Point, Point)), g: Grid(String)) {

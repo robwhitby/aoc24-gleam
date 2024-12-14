@@ -8,4 +8,6 @@ pub fn int_parser_test() {
 
   input.int_parser(["12:34"], True) |> should.equal([[1, 2, 3, 4]])
   input.int_parser(["12:34"], False) |> should.equal([[12, 34]])
+
+  input.int_parser(["12:-34"], False) |> should.equal([[12, -34]])
 }

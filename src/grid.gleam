@@ -23,8 +23,8 @@ pub fn cell_at(grid: Grid(a), point: Point) -> Result(Cell(a), Nil) {
   dict.get(grid.cells, point) |> result.map(Cell(point, _))
 }
 
-pub fn contains(grid: Grid(a), point: Point) -> Bool {
-  dict.has_key(grid.cells, point)
+pub fn in_bounds(grid: Grid(a), point: Point) -> Bool {
+  point.x >= 0 && point.x < grid.width && point.y >= 0 && point.y < grid.height
 }
 
 pub fn update(grid: Grid(a), cell: Cell(a)) -> Grid(a) {
@@ -61,9 +61,13 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
   Grid(cells, w, list.length(in))
 }
 
+pub fn from_cells(cells: Cells(a), width: Int, height: Int) -> Grid(a) {
+  Grid(cells, width, height)
+}
+
 pub fn line(grid: Grid(a), from: Point, step: Point) -> Yielder(Cell(a)) {
   yielder.iterate(from, point.add(_, step))
-  |> yielder.take_while(contains(grid, _))
+  |> yielder.take_while(in_bounds(grid, _))
   |> yielder.filter_map(cell_at(grid, _))
 }
 

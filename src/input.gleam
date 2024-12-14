@@ -21,7 +21,7 @@ pub fn string_parser(lines: List(String), delim: String) -> List(List(String)) {
 }
 
 pub fn int_parser(lines: List(String), single_digits: Bool) -> List(List(Int)) {
-  let assert Ok(re) = regexp.from_string("[^\\d+]")
+  let assert Ok(re) = regexp.from_string("[^\\-\\d+]")
   list.map(lines, fn(line) {
     case single_digits {
       True -> split(line, "")

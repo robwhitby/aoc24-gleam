@@ -1,3 +1,5 @@
+import gleam/dict.{type Dict}
+import gleam/function
 import gleam/int
 import gleam/list
 import parallel_map.{MatchSchedulersOnline}
@@ -23,4 +25,9 @@ pub fn count_contiguous(ints: List(Int)) -> Int {
         |> list.count(fn(b) { b })
       }
   }
+}
+
+pub fn count_uniq(in l: List(a)) -> Dict(a, Int) {
+  list.group(l, function.identity)
+  |> dict.map_values(fn(_, v) { list.length(v) })
 }
