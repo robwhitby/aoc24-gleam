@@ -4,6 +4,7 @@ import gleam/int
 import gleam/list
 import gleam/result
 import gleam/set.{type Set}
+import gleam/string
 import gleam/yielder.{type Yielder}
 import listx
 import point.{type Point, Point}
@@ -61,8 +62,11 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
   Grid(cells, w, list.length(in))
 }
 
-pub fn from_cells(cells: Cells(a), width: Int, height: Int) -> Grid(a) {
-  Grid(cells, width, height)
+pub fn from_cells(cells: List(Cell(a)), width: Int, height: Int) -> Grid(a) {
+  cells
+  |> list.map(fn(cell) { #(cell.point, cell.value) })
+  |> dict.from_list
+  |> Grid(width, height)
 }
 
 pub fn line(grid: Grid(a), from: Point, step: Point) -> Yielder(Cell(a)) {
@@ -167,4 +171,25 @@ pub fn sides(area: Set(Cell(a))) -> Int {
     |> dict.values
   })
   |> int.sum
+}
+
+pub fn to_string(g: Grid(a), cell_value: String) {
+  let xs = list.range(0, g.width)
+  let ys = list.range(0, g.height)
+  let v = fn(value: a) {
+    case cell_value {
+      "" -> string.inspect(value)
+      s -> s
+    }
+  }
+
+  list.map(ys, fn(y) {
+    list.map(xs, fn(x) {
+      cell_at(g, Point(x, y))
+      |> result.map(fn(c) { v(c.value) })
+      |> result.unwrap(".")
+    })
+    |> string.concat
+  })
+  |> string.join("\n")
 }
