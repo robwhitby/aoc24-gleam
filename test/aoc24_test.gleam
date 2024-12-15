@@ -13,6 +13,7 @@ import day11
 import day12
 import day13
 import day14
+import day15
 import gleam/io
 import gleeunit
 
@@ -36,6 +37,7 @@ pub fn day_test_() {
     Day(12, day12.part1, 1930, day12.part2, 1206),
     Day(13, day13.part1, 480, day13.part2, 875_318_608_908),
     Day(14, day14.part1, 21, day14.part2, 101 * 103),
+    Day(15, day15.part1, 10_092, day15.part2, 0),
   ]
   day.build_tests(days)
 }

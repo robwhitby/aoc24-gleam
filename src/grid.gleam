@@ -1,5 +1,6 @@
 import dir
 import gleam/dict.{type Dict}
+import gleam/function
 import gleam/int
 import gleam/list
 import gleam/result
@@ -173,21 +174,18 @@ pub fn sides(area: Set(Cell(a))) -> Int {
   |> int.sum
 }
 
-pub fn to_string(g: Grid(a), cell_value: String) {
-  let xs = list.range(0, g.width)
-  let ys = list.range(0, g.height)
-  let v = fn(value: a) {
-    case cell_value {
-      "" -> string.inspect(value)
-      s -> s
-    }
-  }
+pub fn to_string(g: Grid(String)) -> String {
+  to_string_fn(g, function.identity)
+}
 
+pub fn to_string_fn(g: Grid(a), cell_value: fn(a) -> String) {
+  let xs = list.range(0, g.width - 1)
+  let ys = list.range(0, g.height - 1)
   list.map(ys, fn(y) {
     list.map(xs, fn(x) {
       cell_at(g, Point(x, y))
-      |> result.map(fn(c) { v(c.value) })
-      |> result.unwrap(".")
+      |> result.map(fn(c) { cell_value(c.value) })
+      |> result.unwrap(" ")
     })
     |> string.concat
   })

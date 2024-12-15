@@ -1,10 +1,8 @@
-import gleam/function
-import gleam/pair
 import gleam/dict
 import gleam/int
-import gleam/io
 import gleam/list.{Continue, Stop}
 import gleam/order
+import gleam/pair
 import gleam/result
 import grid.{type Cell, Cell}
 import input
@@ -57,11 +55,6 @@ pub fn part2(in: List(String)) -> Int {
       False -> Continue(#(next, i))
     }
   })
-  // |> function.tap(fn(pair) {
-  //   grid.from_cells(pair.0, width, height)
-  //   |> grid.to_string("#")
-  //   |> io.print_error()
-  // })
   |> pair.second
 }
 
