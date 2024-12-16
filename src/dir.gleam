@@ -25,3 +25,7 @@ pub const diagonals = [ne, nw, se, sw]
 pub fn rotate90(d: Point) {
   Point(-d.y, d.x)
 }
+
+pub fn rotate270(d: Point) {
+  Point(d.y, -d.x)
+}
