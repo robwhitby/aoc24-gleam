@@ -2,6 +2,7 @@ import dir
 import gleam/dict
 import gleam/int
 import gleam/list
+import gleam/result
 import gleam/string
 import gleam/yielder
 import grid.{type Cell, type Grid, Cell, Grid}
@@ -51,7 +52,7 @@ fn move(g: Grid(String), from: Point, moves: List(Point)) {
       case target {
         Ok(Cell(_, v)) if v == "#" -> move(g, from, tail)
         Ok(Cell(p, v)) if v == "O" ->
-          case push(g, p, next) {
+          case push_single(g, p, next) {
             Ok(g1) -> move(g1, p, tail)
             _ -> move(g, from, tail)
           }
@@ -62,19 +63,32 @@ fn move(g: Grid(String), from: Point, moves: List(Point)) {
   }
 }
 
-fn push(g: Grid(String), from: Point, move: Point) {
-  grid.line(g, from, move)
-  |> yielder.drop_while(fn(c) { c.value == "O" })
-  |> yielder.first
-  |> fn(after) {
-    case after {
-      Ok(Cell(p, v)) if v != "#" -> {
-        let swap = g.cells |> dict.insert(from, ".") |> dict.insert(p, "O")
-        Ok(Grid(swap, g.width, g.height))
-      }
-      _ -> Error(Nil)
+fn push_single(g: Grid(String), from: Point, d: Point) {
+  let line =
+    grid.line(g, from, d)
+    |> yielder.take_while(is_box)
+    |> yielder.to_list
+  let assert Ok(last) = list.last(line)
+  let assert Ok(after) = grid.cell_at(g, point.add(last.point, d))
+  case after {
+    Cell(_, v) if v != "#" -> {
+      Ok(shift_cells(g, [after, ..line], d))
     }
+    _ -> Error(Nil)
   }
+}
+
+fn shift_cells(g: Grid(String), cells: List(Cell(String)), d: Point) {
+  list.map(cells, fn(c) {
+    let assert Ok(c1) = grid.cell_at(g, point.subtract(c.point, d))
+    #(c.point, c1.value)
+  })
+  |> dict.from_list
+  |> fn(changes) { Grid(dict.merge(g.cells, changes), g.width, g.height) }
+}
+
+fn is_box(c: Cell(String)) {
+  list.contains(["O", "[", "]"], c.value)
 }
 
 fn score(g: Grid(String)) {
