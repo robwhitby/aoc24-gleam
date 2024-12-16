@@ -1,4 +1,6 @@
+import dir
 import gleam/dict
+import gleam/int
 import gleam/set
 import gleeunit/should
 import grid.{type Cell, Cell}
@@ -38,4 +40,13 @@ pub fn perimeter_and_sides_test() {
     ])
   grid.perimeter(area) |> should.equal(12)
   grid.sides(area) |> should.equal(8)
+}
+
+pub fn shift_values_test() {
+  let g = grid.from_list([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
+  let g2 =
+    grid.shift_values(g, [Cell(Point(1, 0), 2), Cell(Point(1, 1), 5)], dir.s, 0)
+
+  grid.to_string_fn(g2, int.to_string)
+  |> should.equal("103\n426\n759")
 }

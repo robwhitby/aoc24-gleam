@@ -64,10 +64,14 @@ pub fn from_list(in: List(List(a))) -> Grid(a) {
 }
 
 pub fn from_cells(cells: List(Cell(a)), width: Int, height: Int) -> Grid(a) {
+  cells_to_dict(cells)
+  |> Grid(width, height)
+}
+
+fn cells_to_dict(cells: List(Cell(a))) {
   cells
   |> list.map(fn(cell) { #(cell.point, cell.value) })
   |> dict.from_list
-  |> Grid(width, height)
 }
 
 pub fn line(grid: Grid(a), from: Point, step: Point) -> Yielder(Cell(a)) {
@@ -190,4 +194,19 @@ pub fn to_string_fn(g: Grid(a), cell_value: fn(a) -> String) {
     |> string.concat
   })
   |> string.join("\n")
+}
+
+pub fn shift_values(g: Grid(a), cells: List(Cell(a)), d: Point, empty: a) {
+  let shifted =
+    list.map(cells, fn(c) { #(point.add(c.point, d), c.value) })
+    |> dict.from_list
+
+  let spaces =
+    list.map(cells, fn(c) { #(c.point, empty) })
+    |> dict.from_list
+
+  g.cells
+  |> dict.merge(spaces)
+  |> dict.merge(shifted)
+  |> fn(cells) { Grid(cells, g.width, g.height) }
 }
