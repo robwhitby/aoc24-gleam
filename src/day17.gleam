@@ -1,6 +1,7 @@
 import gleam/dict
 import gleam/float
 import gleam/int
+import gleam/io
 import gleam/list
 import gleam/result
 import gleam/string
@@ -20,17 +21,30 @@ fn parse(in: List(String)) {
     }
   }
 
-  #(State(a, b, c, 0, []), get_program)
+  #(State(a, b, c, 0, []), program, get_program)
 }
 
 pub fn part1(in: List(String)) {
-  let #(start_state, program) = parse(in)
-  let instructions = get_instructions()
+  let #(start_state, _, get_program) = parse(in)
 
-  yielder.iterate(Ok(start_state), fn(state: Result(State, Nil)) {
+  let assert Ok(state) = iterate(start_state, get_program)
+  list.reverse(state.o)
+  |> list.map(int.to_string)
+  |> string.concat
+  |> int.parse
+  |> result.unwrap(0)
+}
+
+type State {
+  State(a: Int, b: Int, c: Int, i: Int, o: List(Int))
+}
+
+fn iterate(state: State, get_program: fn(Int) -> Result(#(Int, Int), Nil)) {
+  let instructions = get_instructions()
+  yielder.iterate(Ok(state), fn(state: Result(State, Nil)) {
     case state {
       Ok(s) -> {
-        case program(s.i) {
+        case get_program(s.i) {
           Ok(#(a, b)) -> Ok(instructions(a)(s, b))
           _ -> Error(Nil)
         }
@@ -41,12 +55,6 @@ pub fn part1(in: List(String)) {
   |> yielder.take_while(result.is_ok)
   |> yielder.last()
   |> result.flatten
-  |> result.map(output)
-  |> result.unwrap("")
-}
-
-type State {
-  State(a: Int, b: Int, c: Int, i: Int, o: List(Int))
 }
 
 fn combo(state: State, operand: Int) {
@@ -56,12 +64,6 @@ fn combo(state: State, operand: Int) {
     6 -> state.c
     _ -> operand
   }
-}
-
-fn output(s: State) {
-  list.reverse(s.o)
-  |> list.map(int.to_string)
-  |> string.join(",")
 }
 
 fn adv(s: State, v: Int) {
@@ -100,4 +102,21 @@ fn get_instructions() {
       value
     }
   }
+}
+
+pub fn part2(in: List(String)) {
+  let #(start_state, program, get_program) = parse(in)
+  let want = list.reverse(program)
+
+  yielder.iterate(0, fn(n) { n + 2 })
+  |> yielder.take_while(fn(i) {
+    let s = State(..start_state, a: i)
+    case iterate(s, get_program) {
+      Ok(s1) -> s1.o != want
+      _ -> False
+    }
+  })
+  |> yielder.last()
+  |> result.unwrap(-1)
+  |> int.add(2)
 }

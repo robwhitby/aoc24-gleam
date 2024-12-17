@@ -34,7 +34,7 @@ fn build_part(day: Day, part: Int, f: PartFn, example: Int) {
       simplifile.append(output_file, concat([title, ": ", to_string(v), "\n"]))
     }
   }
-  Timeout(30, #(title, func))
+  Timeout(10, #(title, func))
 }
 
 pub fn answers() {
