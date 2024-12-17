@@ -39,7 +39,7 @@ pub fn day_test_() {
     // Day(13, day13.part1, 480, day13.part2, 875_318_608_908),
     // Day(14, day14.part1, 21, day14.part2, 101 * 103),
     // Day(15, day15.part1, 10_092, day15.part2, 9021),
-    Day(16, day16.part1, 7036, day16.part2, 0),
+    Day(16, day16.part1, 7036, day16.part2, 45),
   ]
   day.build_tests(days)
 }
