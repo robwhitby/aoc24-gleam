@@ -5,7 +5,7 @@ import gleeunit/should
 import input
 import simplifile
 
-const output_file = "./answers"
+pub const output_file = "./answers"
 
 pub type Day {
   Day(number: Int, part1: PartFn, example1: Int, part2: PartFn, example2: Int)
