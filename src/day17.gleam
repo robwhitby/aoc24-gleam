@@ -21,9 +21,7 @@ pub fn part1(in: List(String)) {
   iterate(start_state, program_dict).out
   |> list.reverse
   |> list.map(int.to_string)
-  |> string.concat
-  |> int.parse
-  |> result.unwrap(0)
+  |> string.join(",")
 }
 
 type State {

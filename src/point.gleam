@@ -1,3 +1,4 @@
+import gleam/int
 import gleam/list
 
 pub type Point {
@@ -18,4 +19,8 @@ pub fn neighbours(from: Point, steps: List(Point)) -> List(Point) {
 
 pub fn flip(point: Point) -> Point {
   Point(point.y, point.x)
+}
+
+pub fn to_string(point: Point) {
+  int.to_string(point.x) <> "," <> int.to_string(point.y)
 }

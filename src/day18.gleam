@@ -1,7 +1,5 @@
 import dir
 import gleam/dict.{type Dict}
-import gleam/int
-import gleam/io
 import gleam/list
 import gleam/result
 import gleam/set.{type Set}
@@ -22,19 +20,17 @@ fn parse(in: List(String)) {
   }
 }
 
-pub fn part1(in: List(String)) -> Int {
+pub fn part1(in: List(String)) {
   let #(points, grid_size, time) = parse(in)
-
   walk(list.take(points, time), grid_size)
-  |> result.unwrap(0)
+  |> result.unwrap(-1)
 }
 
-pub fn part2(in: List(String)) -> Int {
+pub fn part2(in: List(String)) {
   let #(points, grid_size, time) = parse(in)
-
   walkable_until(points, grid_size, time)
-  |> io.debug
-  0
+  |> result.map(point.to_string)
+  |> result.unwrap("")
 }
 
 fn walkable_until(points: List(Point), grid_size: Int, time: Int) {
