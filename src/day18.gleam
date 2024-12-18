@@ -1,5 +1,7 @@
 import dir
 import gleam/dict.{type Dict}
+import gleam/int
+import gleam/io
 import gleam/list
 import gleam/result
 import gleam/set.{type Set}
@@ -21,18 +23,32 @@ fn parse(in: List(String)) {
 }
 
 pub fn part1(in: List(String)) -> Int {
-  let #(points, size, time) = parse(in)
-  let grid = list.take(points, time) |> set.from_list
+  let #(points, grid_size, time) = parse(in)
 
-  walk(grid, size, [#(Point(0, 0), 0)], dict.new())
-  |> result.unwrap(-1)
+  walk(list.take(points, time), grid_size)
+  |> result.unwrap(0)
 }
 
-pub fn part2(_in: List(String)) -> Int {
+pub fn part2(in: List(String)) -> Int {
+  let #(points, grid_size, time) = parse(in)
+
+  walkable_until(points, grid_size, time)
+  |> io.debug
   0
 }
 
-fn walk(
+fn walkable_until(points: List(Point), grid_size: Int, time: Int) {
+  case walk(list.take(points, time), grid_size) {
+    Ok(_) -> walkable_until(points, grid_size, time + 1)
+    _ -> list.take(points, time) |> list.last
+  }
+}
+
+fn walk(points: List(Point), size: Int) {
+  walk_rec(set.from_list(points), size, [#(Point(0, 0), 0)], dict.new())
+}
+
+fn walk_rec(
   grid: Set(Point),
   size: Int,
   from: List(#(Point, Int)),
@@ -50,15 +66,15 @@ fn walk(
   }
   case from {
     [] -> dict.get(visited, Point(size - 1, size - 1))
-    [#(p, score), ..tail] -> {
-      case already_visited(p, score) {
-        True -> walk(grid, size, tail, visited)
+    [#(p, s), ..tail] -> {
+      case already_visited(p, s) {
+        True -> walk_rec(grid, size, tail, visited)
         False -> {
-          walk(
+          walk_rec(
             grid,
             size,
-            list.flatten([tail, next(p, score)]),
-            dict.insert(visited, p, score),
+            list.flatten([tail, next(p, s)]),
+            dict.insert(visited, p, s),
           )
         }
       }
