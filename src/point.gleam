@@ -24,3 +24,7 @@ pub fn flip(point: Point) -> Point {
 pub fn to_string(point: Point) {
   int.to_string(point.x) <> "," <> int.to_string(point.y)
 }
+
+pub fn distance(a: Point, b: Point) {
+  int.absolute_value(a.x - b.x) + int.absolute_value(a.y - b.y)
+}

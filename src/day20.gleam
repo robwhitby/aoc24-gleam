@@ -2,6 +2,7 @@ import dir
 import gleam/dict
 import gleam/int
 import gleam/list
+import gleam/result
 import gleam/set.{type Set}
 import grid.{type Grid}
 import input
@@ -10,7 +11,7 @@ import point.{type Point, Point}
 fn parse(in: List(String)) {
   let g = input.string_parser(in, "") |> grid.from_list
   let min_saving = case g.width {
-    15 -> 8
+    15 -> 50
     _ -> 100
   }
   #(g, min_saving)
@@ -20,11 +21,14 @@ pub fn part1(in: List(String)) {
   let #(g, min_saving) = parse(in)
 
   get_track(g)
-  |> shortcuts(min_saving)
+  |> shortcuts(2, min_saving)
 }
 
-pub fn part2(_in: List(String)) {
-  0
+pub fn part2(in: List(String)) {
+  let #(g, min_saving) = parse(in)
+
+  get_track(g)
+  |> shortcuts(20, min_saving)
 }
 
 fn get_track(g: Grid(String)) {
@@ -47,31 +51,19 @@ fn walk_track(track: List(Point), rem: Set(Point)) {
   }
 }
 
-fn shortcuts(track: List(Point), min_saving: Int) {
-  let idx =
+fn shortcuts(track: List(Point), max_length: Int, min_saving: Int) {
+  let index =
     track
     |> list.index_map(fn(p, i) { #(p, i) })
     |> dict.from_list
+  let idx = fn(p) { result.unwrap(dict.get(index, p), 0) }
 
-  track
-  |> list.map(fn(p) {
-    let assert Ok(p_idx) = dict.get(idx, p)
-    [
-      point.add(p, Point(0, -2)),
-      point.add(p, Point(2, 0)),
-      point.add(p, Point(0, 2)),
-      point.add(p, Point(-2, 0)),
-      point.add(p, Point(1, 1)),
-      point.add(p, Point(-1, -1)),
-      point.add(p, Point(1, -1)),
-      point.add(p, Point(-1, 1)),
-    ]
-    |> list.map(dict.get(idx, _))
-    |> list.count(fn(j) {
-      case j {
-        Ok(j) -> j - p_idx >= min_saving + 2
-        _ -> False
-      }
+  list.map(track, fn(p) {
+    let p_idx = idx(p)
+    let #(_, after_p) = list.split(track, p_idx + 3)
+    list.count(after_p, fn(q) {
+      let d = point.distance(p, q)
+      d <= max_length && idx(q) - p_idx - d >= min_saving
     })
   })
   |> int.sum

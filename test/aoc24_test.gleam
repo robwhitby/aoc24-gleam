@@ -48,7 +48,7 @@ pub fn day_test_() {
     // day(17, day17.part1, "5,7,3,0", day17.part2, 117_440),
     // day(18, day18.part1, 22, day18.part2, "6,1"),
     //day(19, day19.part1, 6, day19.part2, 16),
-    day(20, day20.part1, 14, day20.part2, -1),
+    day(20, day20.part1, 1, day20.part2, 285),
   ]
   aoc.build_tests(days)
 }
