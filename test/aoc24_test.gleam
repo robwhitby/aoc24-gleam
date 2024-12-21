@@ -19,6 +19,7 @@ import day17
 import day18
 import day19
 import day20
+import day21
 import gleam/io
 import gleeunit
 
@@ -48,7 +49,8 @@ pub fn day_test_() {
     // day(17, day17.part1, "5,7,3,0", day17.part2, 117_440),
     // day(18, day18.part1, 22, day18.part2, "6,1"),
     //day(19, day19.part1, 6, day19.part2, 16),
-    day(20, day20.part1, 1, day20.part2, 285),
+    //day(20, day20.part1, 1, day20.part2, 285),
+    day(21, day21.part1, 126_384, day21.part2, -1),
   ]
   aoc.build_tests(days)
 }
