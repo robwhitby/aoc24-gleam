@@ -3,7 +3,9 @@ import gleam/int
 import gleam/list
 import gleam/order.{Eq, Gt, Lt}
 import gleam/pair
+import gleam/result
 import gleam/string
+import listx
 import point.{type Point, Point}
 
 fn parse(in: List(String)) {
@@ -39,24 +41,28 @@ fn parse(in: List(String)) {
 }
 
 pub fn part1(in: List(String)) {
-  let #(codes, numeric, directional) = parse(in)
-
-  list.map(codes, fn(code) {
-    let len =
-      code
-      |> keypresses(numeric)
-      |> keypresses(directional)
-      |> keypresses(directional)
-      |> string.length
-
-    let assert Ok(n) = code |> string.drop_end(1) |> int.parse
-    len * n
-  })
-  |> int.sum
+  chain(in, 2)
 }
 
 pub fn part2(in: List(String)) {
-  0
+  chain(in, 25)
+}
+
+fn chain(in: List(String), n: Int) {
+  let #(codes, numeric, directional) = parse(in)
+
+  listx.pmap(codes, fn(code) {
+    let keys = keypresses(code, numeric)
+    let len =
+      list.range(1, n)
+      |> list.fold(keys, fn(acc, _) { keypresses(acc, directional) })
+      |> string.length
+
+    let assert Ok(n) = string.drop_end(code, 1) |> int.parse
+    len * n
+  })
+  |> result.values
+  |> int.sum
 }
 
 fn keypresses(keys: String, keypad: Dict(String, Point)) {
