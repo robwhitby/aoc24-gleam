@@ -16,7 +16,7 @@ pub fn part1(in: List(String)) {
 pub fn part2(in: List(String)) {
   parse(in)
   |> list.map(seqs)
-  |> list.reduce(fn(acc, d) { dict.combine(acc, d, fn(a, b) { a + b }) })
+  |> list.reduce(fn(acc, d) { dict.combine(acc, d, int.add) })
   |> result.map(dict.values(_))
   |> result.try(list.reduce(_, int.max))
   |> result.unwrap(0)
