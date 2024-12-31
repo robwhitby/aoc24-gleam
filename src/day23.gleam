@@ -1,5 +1,4 @@
 import gleam/dict
-import gleam/io
 import gleam/list
 import gleam/result
 import gleam/string
@@ -14,20 +13,35 @@ fn parse(in: List(String)) {
 
 pub fn part1(in: List(String)) {
   let computers = parse(in)
+  find_sets(computers, 3)
+  |> list.filter(fn(l) { list.any(l, string.starts_with(_, "t")) })
+  |> list.length
+}
+
+pub fn part2(in: List(String)) {
+  let computers = parse(in)
+  largest_set(computers, 20)
+  |> result.unwrap([])
+  |> string.join(",")
+}
+
+fn largest_set(computers, size) {
+  case find_sets(computers, size) {
+    [head, ..] -> Ok(head)
+    [] -> largest_set(computers, size - 1)
+  }
+}
+
+fn find_sets(computers, size) {
   computers
   |> dict.keys
   |> list.flat_map(fn(k) {
     dict.get(computers, k)
     |> result.unwrap([])
-    |> list.combinations(2)
+    |> list.combinations(size - 1)
     |> list.map(fn(l) { list.prepend(l, k) |> list.sort(string.compare) })
   })
-  |> list.filter(fn(l) { list.any(l, string.starts_with(_, "t")) })
   |> listx.count_uniq
-  |> dict.filter(fn(_, v) { v == 3 })
-  |> dict.size
-}
-
-pub fn part2(in: List(String)) {
-  0
+  |> dict.filter(fn(_, v) { v == size })
+  |> dict.keys
 }
