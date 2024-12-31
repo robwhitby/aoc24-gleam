@@ -52,7 +52,7 @@ pub fn day_test_() {
     //day(19, day19.part1, 6, day19.part2, 16),
     //day(20, day20.part1, 1, day20.part2, 285),
     //day(21, day21.part1, 126_384, day21.part2, -1),
-    day(22, day22.part1, 37_327_623, day22.part2, -1),
+    day(22, day22.part1, 37_990_510, day22.part2, 23),
   ]
   aoc.build_tests(days)
 }
