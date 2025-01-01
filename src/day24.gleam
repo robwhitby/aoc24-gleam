@@ -70,6 +70,6 @@ fn output(wires: Dict(String, Bool)) {
   |> result.unwrap(0)
 }
 
-pub fn part2(in: List(String)) {
+pub fn part2(_in: List(String)) {
   0
 }

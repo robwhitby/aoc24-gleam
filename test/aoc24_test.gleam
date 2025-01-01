@@ -23,6 +23,7 @@ import day21
 import day22
 import day23
 import day24
+import day25
 import gleam/io
 import gleeunit
 
@@ -56,7 +57,8 @@ pub fn day_test_() {
     //day(21, day21.part1, 126_384, day21.part2, -1),
     //day(22, day22.part1, 37_990_510, day22.part2, 23),
     //day(23, day23.part1, 7, day23.part2, "co,de,ka,ta"),
-    day(24, day24.part1, 2024, day24.part2, -1),
+    //day(24, day24.part1, 2024, day24.part2, -1),
+    day(25, day25.part1, 3, day25.part2, -1),
   ]
   aoc.build_tests(days)
 }
