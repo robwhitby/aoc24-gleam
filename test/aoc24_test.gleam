@@ -54,7 +54,7 @@ pub fn day_test_() {
     // day(18, day18.part1, 22, day18.part2, "6,1"),
     //day(19, day19.part1, 6, day19.part2, 16),
     //day(20, day20.part1, 1, day20.part2, 285),
-    //day(21, day21.part1, 126_384, day21.part2, -1),
+    //day(21, day21.part1, 126_384, day21.part2, 154_115_708_116_294),
     //day(22, day22.part1, 37_990_510, day22.part2, 23),
     //day(23, day23.part1, 7, day23.part2, "co,de,ka,ta"),
     //day(24, day24.part1, 2024, day24.part2, -1),

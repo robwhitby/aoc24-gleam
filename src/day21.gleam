@@ -2,10 +2,7 @@ import gleam/dict.{type Dict}
 import gleam/int
 import gleam/list
 import gleam/order.{Eq, Gt, Lt}
-import gleam/pair
-import gleam/result
 import gleam/string
-import listx
 import point.{type Point, Point}
 
 fn parse(in: List(String)) {
@@ -51,26 +48,43 @@ pub fn part2(in: List(String)) {
 fn chain(in: List(String), n: Int) {
   let #(codes, numeric, directional) = parse(in)
 
-  listx.pmap(codes, fn(code) {
-    let keys = keypresses(code, numeric)
-    let len =
-      list.range(1, n)
-      |> list.fold(keys, fn(acc, _) { keypresses(acc, directional) })
-      |> string.length
-
-    let assert Ok(n) = string.drop_end(code, 1) |> int.parse
-    len * n
+  list.map(codes, fn(code) {
+    string.to_graphemes(code)
+    |> list.fold(#("A", ""), fn(acc, c) {
+      #(c, acc.1 <> press(numeric, acc.0, c))
+    })
+    |> fn(p) {
+      let assert Ok(n) = string.drop_end(code, 1) |> int.parse
+      #(p.1, n)
+    }
   })
-  |> result.values
+  |> list.map(fn(p) { p.1 * keypresses(p.0, directional, n, dict.new()).0 })
   |> int.sum
 }
 
-fn keypresses(keys: String, keypad: Dict(String, Point)) {
-  string.to_graphemes(keys)
-  |> list.fold(#("A", ""), fn(acc, c) {
-    #(c, string.concat([acc.1, press(keypad, acc.0, c), "A"]))
-  })
-  |> pair.second
+fn keypresses(
+  keys: String,
+  keypad: Dict(String, Point),
+  n: Int,
+  cache: Dict(#(String, Int), Int),
+) -> #(Int, Dict(#(String, Int), Int)) {
+  case dict.get(cache, #(keys, n)) {
+    Ok(v) -> #(v, cache)
+    _ -> {
+      case n {
+        0 -> #(string.length(keys), cache)
+        _ -> {
+          string.to_graphemes(keys)
+          |> list.fold(#("A", 0, cache), fn(acc, c) {
+            let ks = press(keypad, acc.0, c)
+            let #(v, cache2) = keypresses(ks, keypad, n - 1, acc.2)
+            #(c, acc.1 + v, dict.insert(cache2, #(ks, n - 1), v))
+          })
+          |> fn(triple) { #(triple.1, triple.2) }
+        }
+      }
+    }
+  }
 }
 
 pub fn press(keypad: Dict(String, Point), current: String, key: String) {
@@ -101,4 +115,5 @@ pub fn press(keypad: Dict(String, Point), current: String, key: String) {
     _, _ -> list.flatten([ys, xs])
   }
   |> string.concat
+  |> string.append("A")
 }
