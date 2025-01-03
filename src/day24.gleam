@@ -61,7 +61,6 @@ fn apply(wires: Dict(String, Bool), gate: Gate) {
 fn output(wires: Dict(String, Bool)) {
   wires
   |> dict.filter(fn(k, _) { string.starts_with(k, "z") })
-  |> io.debug
   |> dict.to_list
   |> list.sort(fn(a, b) { string.compare(b.0, a.0) })
   |> list.map(fn(pair) { bool.to_int(pair.1) |> int.to_string })
@@ -70,6 +69,39 @@ fn output(wires: Dict(String, Bool)) {
   |> result.unwrap(0)
 }
 
-pub fn part2(_in: List(String)) {
-  0
+pub fn part2(in: List(String)) {
+  let #(_, gates) = parse(in)
+
+  let assert Ok(zmax) =
+    list.map(gates, fn(g) { g.out })
+    |> list.sort(string.compare)
+    |> list.last
+
+  gates
+  |> list.filter_map(fn(g) {
+    let xor = g.f == bool.exclusive_or
+    let and = g.f == bool.and
+    let assert Ok(out0) = string.first(g.out)
+    let assert Ok(a0) = string.first(g.a)
+    case g {
+      _ if out0 == "z" && !xor && g.out != zmax -> Ok(g.out)
+      _ if xor && out0 != "z" && a0 != "x" && a0 != "y" -> Ok(g.out)
+      _ if and && g.a != "x00" && g.b != "x00" -> {
+        list.find(gates, fn(g1) {
+          { g1.a == g.out || g1.b == g.out } && g1.f != bool.or
+        })
+        |> result.replace(g.out)
+      }
+      _ if xor -> {
+        list.find(gates, fn(g1) {
+          { g1.a == g.out || g1.b == g.out } && g1.f == bool.or
+        })
+        |> result.replace(g.out)
+      }
+      _ -> Error(Nil)
+    }
+  })
+  |> list.sort(string.compare)
+  |> list.take(8)
+  |> string.join(",")
 }
