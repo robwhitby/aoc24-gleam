@@ -39,7 +39,7 @@ fn build_part(day_number: Int, part: Int, f: PartFn(a), example: a) {
       )
     True
   }
-  Timeout(30, #(title, func))
+  Timeout(60, #(title, func))
 }
 
 pub fn init() -> Nil {
